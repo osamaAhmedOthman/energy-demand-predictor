@@ -38,6 +38,7 @@ from config import (
     MLFLOW_EXPERIMENT,
     REGISTERED_MODEL_NAME,
     LAG_CONTEXT_ROWS,
+    ALL_FEATURES,
 )
 from transformers import EnergyFeatureTransformer
 from pipelines import build_pipeline
@@ -133,8 +134,12 @@ def predict(
     model    = load_model_from_registry()
     preds    = predict(model, combined, predict_start='2019-01-01')
     """
-    with open(FEATURE_CONFIG_FILE) as f:
-        config = json.load(f)
+    try:
+        with open(FEATURE_CONFIG_FILE) as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        log.warning(f"{FEATURE_CONFIG_FILE} not found; using ALL_FEATURES from config")
+        config = {"all_features": ALL_FEATURES}
 
     fe = EnergyFeatureTransformer()
     df_transformed = fe.transform(df_with_context)

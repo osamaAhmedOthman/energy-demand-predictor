@@ -29,13 +29,27 @@ def mock_pipeline():
     interface. It is fitted on random data — the actual predictions don't matter
     for API contract tests.
     """
+    # For testing we don't care about realistic predictions at all — we just
+    # need something with a .predict() method that returns non-negative numbers
+    # of the correct length. A DummyRegressor set to a constant value is ideal
+    # because its output is independent of the input features and it cannot
+    # explode to absurd values when the feature distribution changes.
+    from sklearn.dummy import DummyRegressor
+
     pipe = Pipeline([
+        # scaler is unnecessary because DummyRegressor ignores X, but we include
+        # it to maintain the same interface as the real pipeline (which starts
+        # with a transformer). Keeping the pipeline shape makes the test code
+        # less sensitive to refactoring in production code.
         ('scaler', StandardScaler()),
-        ('model',  Ridge()),
+        ('model', DummyRegressor(strategy='constant', constant=30000.0)),
     ])
+    # Fit on dummy data so sklearn is happy; the regressor ignores X anyway.
     rng = np.random.default_rng(42)
-    X   = rng.random((100, 40))   # 40 cols > ALL_FEATURES count — safely wide
-    y   = rng.uniform(18_000, 42_000, 100)
+    from src.config import ALL_FEATURES
+    n_feats = len(ALL_FEATURES)
+    X = rng.random((10, n_feats))   # small random matrix
+    y = np.full(10, 30000.0)
     pipe.fit(X, y)
     return pipe
 
