@@ -246,10 +246,4 @@ Lag and rolling features are mathematically guaranteed to use only past data —
 
 ---
 
-## License
-
-MIT License — free to use for research and commercial purposes.
-
----
-
 *Last updated: March 2026*
