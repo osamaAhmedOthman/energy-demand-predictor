@@ -1,0 +1,12 @@
+__pycache__/
+.venv/
+*.pyc
+mlruns/
+# ignore processed data but keep raw source files
+data/processed/
+!data/raw/
+check_model.py
+test_api_simple.py
+test_prediction.py
+.DS_Store
+.env

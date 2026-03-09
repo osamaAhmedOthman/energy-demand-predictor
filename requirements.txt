@@ -1,0 +1,25 @@
+# Core ML and data science
+pandas>=1.5.0
+numpy>=1.21.0
+scikit-learn>=1.2.0
+mlflow>=2.0.0
+optuna>=3.0.0
+matplotlib>=3.5.0
+holidays>=0.25.0
+
+# Optional ML libraries (for model comparison)
+xgboost>=1.7.0
+lightgbm>=4.0.0
+
+# FastAPI and web framework
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+pydantic>=2.0.0
+
+# Additional utilities
+python-multipart>=0.0.6
+python-dateutil>=2.8.0
+
+# Development and testing
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
