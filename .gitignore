@@ -10,4 +10,4 @@ test_api_simple.py
 test_prediction.py
 .DS_Store
 .env
-mlflow.db
+
