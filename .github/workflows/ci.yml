@@ -25,5 +25,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
+        env:
+          MLFLOW_TRACKING_URI: sqlite:///mlruns.db
+          PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest tests/ --maxfail=1 --disable-warnings -q
+          pytest tests/ --maxfail=5 --disable-warnings -q
