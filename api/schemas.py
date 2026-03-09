@@ -42,7 +42,12 @@ class PredictRequest(BaseModel):
     predict_start: Optional[str] = Field(None, description="Start date for predictions (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)")
     hours_ahead: Optional[int] = Field(24, ge=1, le=168, description="Number of hours to predict ahead")
 
-
+    @validator('predict_start')
+    def validate_predict_start(cls, v):
+        if v is not None:
+            try:
+                datetime.fromisoformat(v.replace('Z', '+00:00'))
+            except ValueError:
                 raise ValueError('predict_start must be in ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)')
         return v
 
