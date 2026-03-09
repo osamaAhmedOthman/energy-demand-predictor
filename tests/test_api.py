@@ -7,10 +7,35 @@ Tests the health check and prediction endpoints.
 import pytest
 from fastapi.testclient import TestClient
 import pandas as pd
-from datetime import datetime, timedelta
+import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import GradientBoostingRegressor
 
 from api.main import app
+from api.routers.predict import get_model
 from tests.conftest import sample_timestamps
+
+
+@pytest.fixture
+def mock_model():
+    """Mock ML model for testing."""
+    # Create a simple pipeline
+    pipe = Pipeline([('regressor', GradientBoostingRegressor(n_estimators=10, random_state=42))])
+
+    # Fit on dummy data to make it valid
+    X = np.random.rand(100, 5)
+    y = np.random.rand(100)
+    pipe.fit(X, y)
+
+    return pipe
+
+
+@pytest.fixture
+def client(mock_model):
+    """Test client with mocked model dependency."""
+    app.dependency_overrides[get_model] = lambda: mock_model
+    yield TestClient(app)
+    app.dependency_overrides = {}
 
 
 @pytest.fixture
@@ -23,13 +48,13 @@ def client():
 def sample_energy_data(sample_timestamps):
     """Sample energy data for testing."""
     n = len(sample_timestamps)
-    rng = pd.np.random.default_rng(42)
+    rng = np.random.default_rng(42)
 
     # Create sample data similar to conftest.py
     data = []
     for i, ts in enumerate(sample_timestamps):
-        hour_effect = 3000 * pd.np.sin(2 * pd.np.pi * (i % 24) / 24)
-        demand = pd.np.clip(28000 + hour_effect + rng.normal(0, 300), 18000, 42000)
+        hour_effect = 3000 * np.sin(2 * np.pi * (i % 24) / 24)
+        demand = np.clip(28000 + hour_effect + rng.normal(0, 300), 18000, 42000)
 
         data.append({
             "time": ts.isoformat(),
