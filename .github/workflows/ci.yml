@@ -14,30 +14,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 1. Create the local folders that your docker-compose volumes need
       - name: Create required directories
         run: |
           mkdir -p mlruns
           mkdir -p data
           chmod -R 777 mlruns data
 
-      # 2. Start the API and MLflow services
+      # CHANGED: 'docker-compose' becomes 'docker compose'
       - name: Start Services with Docker Compose
-        run: docker-compose up -d
+        run: docker compose up -d
 
-      # 3. Wait for the MLflow SQLite DB and API to initialize
       - name: Wait for services
         run: sleep 10
 
-      # 4. Run your tests INSIDE the 'api' container
-      # We use -T because there is no interactive terminal in GitHub Actions
+      # CHANGED: 'docker-compose' becomes 'docker compose'
       - name: Run Pytest inside Container
         run: |
-          docker-compose exec -T api pytest tests/ --maxfail=3 --disable-warnings -q
+          docker compose exec -T api pytest tests/ --maxfail=3 --disable-warnings -q
         env:
           PYTHONPATH: /app
 
-      # 5. Always shut down containers, even if tests fail
+      # CHANGED: 'docker-compose' becomes 'docker compose'
       - name: Stop and Cleanup
         if: always()
-        run: docker-compose down
+        run: docker compose down
