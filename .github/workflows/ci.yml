@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4 to remove Node.js warning
 
       - name: Create required directories
         run: |
@@ -20,21 +20,18 @@ jobs:
           mkdir -p data
           chmod -R 777 mlruns data
 
-      # CHANGED: 'docker-compose' becomes 'docker compose'
       - name: Start Services with Docker Compose
         run: docker compose up -d
 
-      - name: Wait for services
+      - name: Wait for services to be ready
         run: sleep 10
 
-      # CHANGED: 'docker-compose' becomes 'docker compose'
-      - name: Run Pytest inside Container
+      - name: Run Pytest inside API Container
         run: |
           docker compose exec -T api pytest tests/ --maxfail=3 --disable-warnings -q
         env:
           PYTHONPATH: /app
 
-      # CHANGED: 'docker-compose' becomes 'docker compose'
-      - name: Stop and Cleanup
+      - name: Stop and Cleanup Containers
         if: always()
         run: docker compose down
